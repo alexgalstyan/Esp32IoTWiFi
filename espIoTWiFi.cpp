@@ -4,6 +4,8 @@
 #elif defined(ESP8266)
 #endif    
 
+espIoTWiFi wifiConnection;
+
 
 /**
  * Конструктор класса espIoTWifi

@@ -75,6 +75,7 @@ private:
 
 };
 
+extern espIoTWiFi wifiConnection;
 
 
 #endif
