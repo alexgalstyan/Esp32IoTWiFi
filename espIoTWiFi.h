@@ -60,9 +60,9 @@ public:
     void begin(Print* __log = NULL); // Метод должен быть вызван из функции setup() скетча предназначен для старта 
     void begin(const configWiFi & _wifiConf, Print* __log = NULL); // Метод должен быть вызван из функции setup() скетча предназначен старта поключение к инфраструктуре
     void loop(); // Метод должен быть вызван из функции loop() скетча
+    String getBoardId(); // Строковый идентификатор модуля (MAC адрес процессора)    
 
 private:
-    String getBoardId(); // Строковый идентификатор модуля (MAC адрес процессора)    
     
     bool startWiFiAsStation(); // Настройка модуля в режиме инфраструктуры
     void startWiFiAsAP(); // Настройка модуля в режиме точки доступа
