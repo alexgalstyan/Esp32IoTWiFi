@@ -1,7 +1,6 @@
 #ifndef UDP_CONVERSATION_H
 #define UDP_CONVERSATION_H
 #include <Arduino.h>
-#include "constCollection.h"
 #include "espIoTWiFi.h"
 
 
