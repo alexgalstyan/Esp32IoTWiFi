@@ -1,5 +1,10 @@
 #include "espIoTWiFi.h"
-#include <ESPmDNS.h>
+
+#ifdef ESP32
+#elif defined(ESP8266)
+#endif    
+
+espIoTWiFi wifiConnection;
 
 
 /**
@@ -46,15 +51,14 @@ void espIoTWiFi::begin(const configWiFi & _wifiConf, Print* __log){
  * Предназначен для циклической обработки работы класса
  */
 void espIoTWiFi::loop(){
-    const uint32_t timeout = 300000; // 5 min.
-    static uint32_t nextTime = timeout;
+    static uint32_t nextTime = wifi_timeout_long;
 
     if ((!_apMode) && (WiFi.status() != WL_CONNECTED) && ((WiFi.getMode() == WIFI_STA) || ((int32_t)(millis() - nextTime) >= 0))) {
         startWiFi();
-        nextTime = millis() + timeout;
+        nextTime = millis() + wifi_timeout_long;
+        // yield(); // For WiFi maintenance
     }
 
-    yield(); // For WiFi maintenance
 }
 
 /**
@@ -62,10 +66,16 @@ void espIoTWiFi::loop(){
  * @returns уникальный идентификатор класса
  */
 String espIoTWiFi::getBoardId() {
-    uint64_t chipID = ESP.getEfuseMac(); //The chip ID is essentially its MAC address(length: 6 bytes).;
-    String result = String((uint16_t)(chipID>>32), HEX);//High 2 bytes
-    result += String((uint32_t)(chipID), HEX);//Low 4bytes.
-    result.toUpperCase();
+    String result = "";
+    #ifdef ESP32
+        uint64_t chipID = ESP.getEfuseMac(); //The chip ID is essentially its MAC address(length: 6 bytes).;
+        result = String((uint16_t)(chipID>>32), HEX);//High 2 bytes
+        result += String((uint32_t)(chipID), HEX);//Low 4bytes.
+        result.toUpperCase();
+    #elif defined(ESP8266)
+        result = String(ESP.getChipId(), HEX);
+        result.toUpperCase();
+    #endif    
     return result;
 }
 
@@ -164,8 +174,8 @@ void espIoTWiFi::startWiFi(){
     if (_apMode || (! startWiFiAsStation()))
         startWiFiAsAP();
 
-    curWiFiStatus = WiFi.status();
-    curWifiMode = WiFi.getMode();
+    _wifiConfig.WiFiStatus = WiFi.status();
+    _wifiConfig.wifiMode = WiFi.getMode();
 
     if (_wifiConfig.mDNS.length()) {
         if (MDNS.begin(_wifiConfig.mDNS.c_str())) {

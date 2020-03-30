@@ -4,8 +4,15 @@
 // Подключение библиотек 
     #include <pgmspace.h>
     #include <Arduino.h>
-    #include "WiFi.h"
-    // #include "WiFiGeneric.h"
+    #ifdef ESP32
+        #include "WiFi.h"
+        #include <ESPmDNS.h>
+        // #include "WiFiGeneric.h"
+    #elif defined(ESP8266)
+        #include <ESP8266WiFi.h>
+        #include <ESP8266mDNS.h>
+        // #include <ESP8266WiFiGeneric.h>
+    #endif
 
 // Строковые константы хнанимые на флеше
     const char* const defSSID PROGMEM = "G.A.S_"; // Префикс имени точки доступа по умолчанию
@@ -13,6 +20,7 @@
 
 // // Глобальные констатны
     const uint32_t wifi_timeout = 60000; // 1 min. for normal ... (setupMode == SLEEP_MODE)? 40000: 20 sec. for sleepmode and 
+    const uint32_t wifi_timeout_long = 300000; // 5 min.
 
 
 /**
@@ -20,6 +28,7 @@
  */
 struct configWiFi{
     WiFiMode_t wifiMode;
+    wl_status_t WiFiStatus;
     String ssid; // Имя сети или точки доступа
     String password; // Пароль сети
     String mDNS; // mDNS домен
@@ -51,16 +60,14 @@ public:
     void begin(Print* __log = NULL); // Метод должен быть вызван из функции setup() скетча предназначен для старта 
     void begin(const configWiFi & _wifiConf, Print* __log = NULL); // Метод должен быть вызван из функции setup() скетча предназначен старта поключение к инфраструктуре
     void loop(); // Метод должен быть вызван из функции loop() скетча
+    String getBoardId(); // Строковый идентификатор модуля (MAC адрес процессора)    
 
 private:
-    String getBoardId(); // Строковый идентификатор модуля (MAC адрес процессора)    
     
     bool startWiFiAsStation(); // Настройка модуля в режиме инфраструктуры
     void startWiFiAsAP(); // Настройка модуля в режиме точки доступа
     void startWiFi(); // Попытка настройки модуля в заданный параметрами режим, при неудаче принудительный переход в режим точки доступа
 
-    wl_status_t curWiFiStatus;
-    WiFiMode_t curWifiMode;
     Print* _log; // Логи скетча
     bool _apMode; // Режим точки доступа (true) или инфраструктуры (false)
     configWiFi _wifiConfig; //конфигурация подключения
@@ -68,6 +75,7 @@ private:
 
 };
 
+extern espIoTWiFi wifiConnection;
 
 
 #endif
