@@ -56,7 +56,7 @@ void espIoTWiFi::loop(){
     if ((!_apMode) && (WiFi.status() != WL_CONNECTED) && ((WiFi.getMode() == WIFI_STA) || ((int32_t)(millis() - nextTime) >= 0))) {
         startWiFi();
         nextTime = millis() + wifi_timeout_long;
-        // yield(); // For WiFi maintenance
+        yield(); // For WiFi maintenance
     }
 
 }
