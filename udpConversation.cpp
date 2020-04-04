@@ -177,7 +177,7 @@ void pushToRemoteDeviceList(const IPAddress& address, bool _needSend){ //default
             }
             deviceList[deviceListCount-1].address = address;
             deviceList[deviceListCount-1].needSend = _needSend;
-            delete tmpPtr;
+            delete[] tmpPtr;
             if(udpPtrLog != NULL)
                 udpPtrLog->println(address.toString() + logTextDeviceAdded);
         }
